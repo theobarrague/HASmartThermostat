@@ -1306,12 +1306,16 @@ class SmartThermostat(ClimateEntity, RestoreEntity, ABC):
     async def async_set_preset_temp(self, **kwargs):
         """Set the presets modes temperatures."""
         for preset_name, preset_temp in kwargs.items():
-            value = (
-                None
-                if "disable" in preset_name and preset_temp
-                else (max(min(float(preset_temp), self.max_temp), self.min_temp))
-            )
-            setattr(self, f"_{preset_name.replace('_disable', '')}", value)
+            if "disable" in preset_name:
+                # A disable flag set to False must leave the preset temperature unchanged
+                if preset_temp:
+                    setattr(self, f"_{preset_name.replace('_disable', '')}", None)
+            else:
+                setattr(
+                    self,
+                    f"_{preset_name}",
+                    max(min(float(preset_temp), self.max_temp), self.min_temp),
+                )
         if self.presets:
             self._support_flags |= ClimateEntityFeature.PRESET_MODE
         else:
