@@ -96,6 +96,14 @@ class PID:
         return self._sampling_period
 
     @property
+    def derivative_filter(self):
+        return self._derivative_filter
+
+    @derivative_filter.setter
+    def derivative_filter(self, derivative_filter):
+        self._derivative_filter = derivative_filter
+
+    @property
     def error(self):
         return self._error
 
